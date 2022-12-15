@@ -33,12 +33,12 @@ async def on_ready():
 
 
 @bot.command()
-async def schedule(ctx,message,fdate,ttime,tdate):
+async def schedule(ctx,ftime,fdate,ttime,tdate):
     username = str(ctx.author).split("#")[0]
     channel = str(ctx.channel.name)
 
     if channel == "scheduler":
-        tim = convertTime(message)
+        tim = convertTime(ftime)
         timf = convertTime(ttime)
         emb = discord.Embed(title="Poll for Meeting",description=f"The meeting is about to be scheduled from {tim} to {timf}.Is it okay?(React in 5min)")
         poll = bot.get_channel(int(pollid))
@@ -73,7 +73,7 @@ async def schedule(ctx,message,fdate,ttime,tdate):
             viz = list(users)
             title = "Meeting"
             datef = fdate
-            timef = message
+            timef = ftime
             date = tdate
             time = ttime
             button = Button(label="Add to Calender",style=discord.ButtonStyle.green,url=f"https://www.google.com/calendar/render?action=TEMPLATE&text={title}&dates{datef}T{timef}Z/{date}T{time}Z&details=For+details,+link+here:+http://www.akkupy.me&sf=true&output=xml".format(title,datef,timef,date,time))
