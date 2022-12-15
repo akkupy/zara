@@ -26,6 +26,11 @@ def convertTime(input):
 
     return '{}:{:02d}{}'.format(h or 12, m, postfix)
 
+def convertDate(input):
+    y,m,d = int(input[0:4]),int(input[4:6]),int(input[6:8])
+
+    return '{}/{}/{}'.format(d,m,y)
+
 
 @bot.event
 async def on_ready():
@@ -33,14 +38,24 @@ async def on_ready():
 
 
 @bot.command()
-async def schedule(ctx,ftime,fdate,ttime,tdate):
+async def schedule(ctx,fTime,fDate,tTime,tDate):
     username = str(ctx.author).split("#")[0]
     channel = str(ctx.channel.name)
 
     if channel == "scheduler":
-        tim = convertTime(ftime)
-        timf = convertTime(ttime)
-        emb = discord.Embed(title="Poll for Meeting",description=f"The meeting is about to be scheduled from {tim} to {timf}.Is it okay?(React in 5min)")
+        fromFormatedTime = convertTime(fTime)
+        toFormatedTime = convertTime(tTime)
+        fromFormatedDate = convertDate(fDate)
+        toFormatedDate = convertDate(tDate)
+        emb = discord.Embed(title="Poll for Meeting",description=f'''
+        The Meeting is about to be  scheduled.
+        Start Date : {fromFormatedDate}
+        Start Time : {fromFormatedTime}
+        End Date : {toFormatedDate}
+        End Time : {toFormatedTime}
+        Description: AR workshop
+        React if you are okay or not (Available for 5min)!
+        ''')
         poll = bot.get_channel(int(pollid))
         msg = await poll.send(embed=emb)
         await msg.add_reaction('👍') 
@@ -49,17 +64,18 @@ async def schedule(ctx,ftime,fdate,ttime,tdate):
         await asyncio.sleep(10)
         userz = bot.get_user(int(botid))
         await msg.remove_reaction('👍',userz)
+        await msg.remove_reaction('👎',userz)
         vote_msg = await msg.channel.fetch_message(msg.id)
         positive = 0
         negative = 0
         users = set()
         for reaction in vote_msg.reactions:
             if reaction.emoji == '👍':
-                positive = reaction.count - 1 
+                positive = reaction.count
                 async for user in reaction.users():
                     users.add(user)
             if reaction.emoji == '👎':
-                negative = reaction.count - 1
+                negative = reaction.count
         
 
 
@@ -67,21 +83,25 @@ async def schedule(ctx,ftime,fdate,ttime,tdate):
 
             announcement = bot.get_channel(int(annid))
   
-            response = "Scheduled a meeting  from " + tim +" to " + timf + " by " + username
-            await announcement.send(response)
+            response = discord.Embed(title="A meeting is Scheduled.",description=f'''
+            Start Date : {fromFormatedDate}
+            Start Time : {fromFormatedTime}
+            End Date : {toFormatedDate}
+            End Time : {toFormatedTime}
+            Description: AR workshop
+            Scheduled by : {username}
+            ''')
+
+            await announcement.send(embed=response)
 
             viz = list(users)
             title = "Meeting"
-            datef = fdate
-            timef = ftime
-            date = tdate
-            time = ttime
-            button = Button(label="Add to Calender",style=discord.ButtonStyle.green,url=f"https://www.google.com/calendar/render?action=TEMPLATE&text={title}&dates{datef}T{timef}Z/{date}T{time}Z&details=For+details,+link+here:+http://www.akkupy.me&sf=true&output=xml".format(title,datef,timef,date,time))
+            button = Button(label="Add to Calender",style=discord.ButtonStyle.green,url=f"https://calendar.google.com/calendar/u/0/r/eventedit?text={title}&dates={fDate}T{fTime}/{tDate}T{tTime}&ctz=Asia/Kolkata&details=Njoy+Lyf")
             view = View()
             view.add_item(button)
 
             for i in range(0,len(viz)):
-                await viz[i].send(response,view=view)
+                await viz[i].send(embed=response,view=view)
 
 
 bot.run(TOKEN)
