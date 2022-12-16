@@ -12,6 +12,19 @@ pollid = os.getenv('POLL_CHANNEL')
 annid = os.getenv('ANNOUNCEMENT_CHANNEL')
 botid = os.getenv('BOT_ID')
 
+print(r'''
+     __       _       _           
+    /  \     | |     | | 
+   /    \    | | /\  | | /\   _   _
+  /  /\  \   | |/ /  | |/ /  | | | |  
+ /  ____  \  | |\ \  | |\ \  | |_| |
+/__/    \__\ |_| \_\ |_| \_\  \___/  ''')
+print("\n*************************************")
+print("\n* Copyright of Akash, 2022          *")
+print("\n* https://akkupy.me                 *")
+print("\n* https://t.me/akkupy               *")
+print("\n*************************************")
+
 bot = commands.Bot(command_prefix='.',intents=discord.Intents.all())
 
 
